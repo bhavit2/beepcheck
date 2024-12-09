@@ -1,0 +1,21 @@
+from scrapers.amazon_scraper import AmazonScraper
+
+class ScraperManager:
+    def __init__(self):
+        self.scrapers = []
+
+    def register_scraper(self, scraper):
+        """
+        Register a new scraper.
+        """
+        self.scrapers.append(scraper)
+
+    def fetch_all_results(self, search_term: str) -> list:
+        """
+        Fetch results from all registered scrapers.
+        """
+        results = []
+        for scraper in self.scrapers:
+            print(f"Fetching results from {scraper.__class__.__name__}...")
+            results.extend(scraper.fetch_results(search_term))
+        return results

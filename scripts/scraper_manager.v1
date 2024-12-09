@@ -1,0 +1,38 @@
+from category_classifier import CategoryClassifier
+from scrapers.amazon_scraper import AmazonScraper
+from scrapers.bestbuy_scraper import BestBuyScraper
+
+class ScraperManager:
+    def __init__(self):
+        self.scrapers = {
+            "Electronics": [AmazonScraper(), BestBuyScraper()],
+            "Appliances": [BestBuyScraper()],
+            "Fashion": [],  # Add scrapers for fashion retailers
+            "Groceries": [],  # Add scrapers for grocery retailers
+        }
+        self.classifier = CategoryClassifier()
+
+    def fetch_data(self, search_term: str) -> list:
+        category = self.classifier.classify(search_term)
+        selected_scrapers = self.scrapers.get(category, [])
+
+        print(f"Category: {category}")
+        print(f"Scraping from retailers: {', '.join(scraper.__class__.__name__ for scraper in selected_scrapers)}")
+
+        results = []
+        for scraper in selected_scrapers:
+            results.extend(scraper.fetch_results(search_term))
+
+        return results
+
+# Testing ScraperManager
+if __name__ == "__main__":
+    search_term = input("Enter a product to search for: ")
+    manager = ScraperManager()
+    results = manager.fetch_data(search_term)
+
+    if results:
+        for result in results:
+            print(result)
+    else:
+        print("No results found.")
